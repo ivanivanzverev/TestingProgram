@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Core {
 
@@ -21,7 +22,40 @@ public class Core {
     }
 
     public void shuffle() {
+        Collections.shuffle(questions);
+    }
 
+    public ArrayList<Question> getQuestions() {
+        return questions;
+    }
+
+    public boolean checkAnswer(Question question, String answer) {
+        boolean check = true;
+        switch (question.getType()) {
+            case 1:
+                check = question.getAnswer().equals(answer);
+                break;
+            case 2:
+                check = true;
+                String[] rightVars = question.getAnswer().split(" ");
+                String[] vars = answer.split(" ");
+                for (int i = 0; i < rightVars.length; i++) {
+                    for (int j = 0; j < vars.length; i++) {
+                        if (rightVars[i].equals(vars[j]) && rightVars != null) {
+                            rightVars[i] = null;
+                            vars[j] = null;
+                        }
+                    }
+                }
+                for (String el: rightVars) {
+                    if (el != null) check = false;
+                }
+                for (String el: vars) {
+                    if (el != null) check = false;
+                }
+                break;
+        }
+        return check;
     }
 
 
