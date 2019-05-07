@@ -1,23 +1,37 @@
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.nio.*;
+import java.util.List;
 
 public class Core {
 
-    private ArrayList<Question> questions;
+    private List<Question> questions;
+
+    public Core() {
+        this.questions = new ArrayList<>();
+    }
 
     public void readFile(String dir) throws IOException {
-        File file = new File(dir);
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        int i = 0;
-        while (file.canExecute()) {
+        /*File file = new File(dir);
+        FileReader fr = new FileReader(file);
+        BufferedReader br = new BufferedReader(fr);*/
+        Path filePath = Paths.get(dir);
+        List<String> lines = new ArrayList<>();
+        lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
+        for (int i = 0; i < lines.size(); i += 5) {
+            questions.add(new Question(Integer.parseInt(lines.get(i)), Integer.parseInt(lines.get(i + 1)), lines.get(i + 2), lines.get(i + 3), lines.get(i + 4)));
             //questions.set(i++, new Question(Integer.parseInt(br.readLine()), Integer.parseInt(br.readLine()), br.readLine(), br.readLine(), br.readLine()));
-            questions.get(i).setNumber(Integer.parseInt(br.readLine()));
+            /*questions.get(i).setNumber(Integer.parseInt(br.readLine()));
             questions.get(i).setType(Integer.parseInt(br.readLine()));
             questions.get(i).setQuestion(br.readLine());
             questions.get(i).setVar(br.readLine());
-            questions.get(i).setAnswer(br.readLine());
-            i++;
+            questions.get(i).setAnswer(br.readLine());*/
+            //i++;
         }
     }
 
@@ -25,7 +39,7 @@ public class Core {
         Collections.shuffle(questions);
     }
 
-    public ArrayList<Question> getQuestions() {
+    public List<Question> getQuestions() {
         return questions;
     }
 
@@ -36,24 +50,25 @@ public class Core {
                 check = question.getAnswer().equals(answer);
                 break;
             case 2:
-                check = true;
-                String[] rightVars = question.getAnswer().split(" ");
-                String[] vars = answer.split(" ");
-                for (int i = 0; i < rightVars.length; i++) {
-                    for (int j = 0; j < vars.length; i++) {
-                        if (rightVars[i].equals(vars[j]) && rightVars != null) {
-                            rightVars[i] = null;
-                            vars[j] = null;
-                        }
+                String[] rightVars = question.getAnswer().split(";");
+                String[] vars = answer.split(";");
+                if (rightVars.length == vars.length) {
+                    List<String> ansList = new ArrayList<>();
+                    for (String ans: vars) {
+                        ansList.add(ans);
                     }
+                    for (String rightVar: rightVars) {
+                        if (ansList.contains(rightVar)) ansList.remove(rightVar);
+                    }
+                    if (!ansList.isEmpty()) {
+                        check = false;
+                        break;
+                    }
+                } else {
+                    check = false;
+                    break;
                 }
-                for (String el: rightVars) {
-                    if (el != null) check = false;
-                }
-                for (String el: vars) {
-                    if (el != null) check = false;
-                }
-                break;
+
         }
         return check;
     }

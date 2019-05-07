@@ -6,6 +6,7 @@ public class Question {
     private String var;
     private String answer;
 
+
     public Question(int number, int type, String question, String var, String answer) {
         this.type = type;
         this.number = number;
